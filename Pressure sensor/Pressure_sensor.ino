@@ -1,27 +1,33 @@
-const int sensorPin = A0;
+const int sensorPin = A1; // Analog pin where the sensor is connected
 
-const int offset = 201; // zero pressure adjust
-const int fullScale = 1023; // max pressure adjust
+// New constants for the pressure calculation
+const float voltageLowerLimit = 1.0; // Voltage lower limit in volts
+const float voltageUpperLimit = 5.0; // Voltage upper limit in volts
+const float pressureRangePsi = 100.0; // Pressure range of the sensor in psi
+const float psiToBar = 0.0689476; // Conversion factor from psi to bars
+const float atmosphericPressureOffset = 1.0; // Offset for atmospheric pressure in bars
 
-float sensorType = 1000.0; // kPa, change this if your sensor type is different
-float pressure; // final pressure in kPa
-float pressureInBars; // final pressure in bars
-const float atmosphericPressure = 1.0; // atmospheric pressure in bars
+float voltageReading; // Variable to store the voltage reading
+float pressure; // Variable to store pressure in bars
+float calfac = 1.68; // Calibration factor calculated by taking the average ratio between the bicycle pump measurement to arduino sensor measurement
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600); // Initialize serial communication at 9600 bps
 }
 
 void loop() {
-  // Calculate pressure in kPa
-  pressure = (analogRead(sensorPin) - offset) * sensorType / (fullScale - offset);
+  // Read the analog value from the sensor and convert to voltage
+  voltageReading = analogRead(sensorPin) * (5.0 / 1023.0);
 
-  // Convert pressure to bars and add atmospheric pressure
-  pressureInBars = (pressure / 100.0) + atmosphericPressure;
+  // Calculate pressure in bars using the converted formula and apply calibration factor
+  pressure = psiToBar * pressureRangePsi * (voltageReading - voltageLowerLimit) / (voltageUpperLimit - voltageLowerLimit);
+  pressure = pressure * calfac;
+
+
 
   // Print the pressure in bars with the unit
-  Serial.print(pressureInBars, 4); // Print pressure in bars with 4 decimal places
+  Serial.print(pressure, 4); // Print pressure in bars with 4 decimal places
   Serial.println(" bars"); // Print the unit
 
-  delay(100);
+  delay(100); // Wait for 100 milliseconds before the next reading
 }
