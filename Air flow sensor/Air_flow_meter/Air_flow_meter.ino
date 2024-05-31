@@ -4,9 +4,6 @@
   Reads an analog input on pin A1, converts it to a voltage, maps it to the air flow rate,
   and prints the result to the Serial Monitor.
 
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/ReadAnalogVoltage
 */
 
 // the setup routine runs once when you press reset:
