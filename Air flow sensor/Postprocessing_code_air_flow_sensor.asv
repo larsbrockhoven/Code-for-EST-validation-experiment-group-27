@@ -1,0 +1,38 @@
+% Initialize arrays to hold voltage and air flow rate values
+voltages = [];
+air_flow_rates = [];
+
+% Open the file
+fileID = fopen('data_air_flow_sensor.txt', 'r');
+
+% Read the file line by line
+while ~feof(fileID)
+    % Read the current line
+    line = fgetl(fileID);
+    
+    % Check if the line contains 'Voltage:' and 'Air Flow Rate:'
+    if contains(line, 'Voltage:') && contains(line, 'Air Flow Rate:')
+        % Extract the voltage value
+        voltage_str = extractBetween(line, 'Voltage: ', ' V');
+        voltage = str2double(voltage_str{1});
+        
+        % Extract the air flow rate value
+        air_flow_rate_str = extractBetween(line, 'Air Flow Rate: ', ' L/min');
+        air_flow_rate = str2double(air_flow_rate_str{1});
+        
+        % Append the values to the arrays
+        voltages(end + 1) = voltage; 
+        air_flow_rates(end + 1) = air_flow_rate;
+    end
+end
+
+% Close the file
+fclose(fileID);
+
+% Plot the data
+figure;
+plot(voltages, air_flow_rates, '-o', 'Color', 'b');
+title('Air Flow Rate vs Voltage');
+xlabel('Voltage (V)');
+ylabel('Air Flow Rate (L/min)');
+grid on;
